@@ -1,36 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛡️ Portal de Agentes y Calculadora PPR (Next.js & Supabase)
 
-## Getting Started
+Sistema web moderno y seguro desarrollado para optimizar la gestión de asesores financieros y agentes de seguros, permitiendo realizar cálculos avanzados de Planes Personales de Retiro (PPR), generar reportes personalizados y administrar el flujo de prospectos.
 
-First, run the development server:
+## ✨ Características Principales
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **🔒 Control de Sesión Única (Single Session Enforcement):** Implementación de seguridad personalizada que previene inicios de sesión concurrentes. Cada nuevo login invalida automáticamente la sesión anterior mediante un identificador único (`current_session_id`) sincronizado con Supabase y cookies de corta duración.
+- **🧮 Calculadora PPR Interactiva:** Herramienta dinámica para proyectar ahorros para el retiro con cálculos precisos y personalizables.
+- **📄 Generación de Reportes:** Visualización estructurada de datos y proyecciones para clientes y agentes.
+- **⚡ Enlaces Compartibles:** Generación automática de URLs con identificadores de agente para prospección directa.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tecnologías y Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Este proyecto está construido utilizando tecnologías modernas del ecosistema web:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Frontend:** [Next.js](https://nextjs.org/) (App Router), React, TypeScript.
+- **Estilos:** Tailwind CSS para una interfaz limpia, responsiva y profesional.
+- **Backend & Auth:** [Supabase](https://supabase.com/) (`@supabase/ssr`) para la autenticación segura de usuarios y gestión de base de datos PostgreSQL.
+- **Despliegue:** Optimizado para Vercel.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚀 Seguridad y Autenticación
+El sistema maneja un flujo robusto donde cada autenticación valida la unicidad de la sesión en el navegador, asegurando que las credenciales del agente permanezcan protegidas contra accesos simultáneos no autorizados.
