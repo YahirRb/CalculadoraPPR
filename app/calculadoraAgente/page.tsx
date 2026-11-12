@@ -64,7 +64,7 @@ function CalculadoraPPRContent() {
       
       // Si ocurre un error o no hay un usuario autenticado, lo mandamos al login de inmediato
       if (error || !user) {
-        router.push("/login");
+        router.push("/");
         return;
       }
       // Obtenemos el ID de sesión más reciente que está guardado en Supabase
@@ -80,7 +80,7 @@ function CalculadoraPPRContent() {
         document.cookie = "my_session_id=; path=/; max-age=0;";
         
         alert("Tu sesión ha sido cerrada porque se inició sesión en otro dispositivo.");
-        router.push("/login");
+        router.push("/");
         return;
       }
       // Si sí está logueado, guardamos sus datos y armamos su enlace único

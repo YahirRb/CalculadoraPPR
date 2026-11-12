@@ -81,7 +81,7 @@ export default function RegisterPage() {
             telefono: formData.telefono,
             cnsf: formData.cnsf,
           },
-          emailRedirectTo: 'http://localhost:3000/login',
+          emailRedirectTo: 'https://retiro-acelerado.vercel.app/',
         },
       });
 
@@ -230,7 +230,7 @@ export default function RegisterPage() {
               <div className="mt-8 text-center border-t border-slate-100 pt-6">
                 <p className="text-xs text-slate-500">
                   ¿Ya tienes una cuenta?{" "}
-                  <Link href="/login" className="text-indigo-600 hover:text-indigo-800 font-bold transition">
+                  <Link href="/" className="text-indigo-600 hover:text-indigo-800 font-bold transition">
                     Inicia sesión aquí
                   </Link>
                 </p>
@@ -263,7 +263,7 @@ export default function RegisterPage() {
 
               <div className="pt-4">
                 <Link 
-                  href="/login"
+                  href="/"
                   className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-4 rounded-2xl transition-all duration-200 shadow-lg shadow-indigo-600/30 text-sm disabled:opacity-50 active:scale-[0.99]"
                 >
                   Ir a Iniciar Sesión

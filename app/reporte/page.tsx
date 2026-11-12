@@ -25,7 +25,7 @@ function ReporteContent() {
       
       // Si no hay sesión activa o hay error, redirigimos al login inmediatamente
       if (error || !user) {
-        router.push("/login");
+        router.push("/");
         return;
       }
 
@@ -37,7 +37,7 @@ function ReporteContent() {
         document.cookie = "my_session_id=; path=/; max-age=0;";
         
         alert("Tu sesión ha sido cerrada porque se inició sesión en otro dispositivo.");
-        router.push("/login");
+        router.push("/");
         return;
       }
       
