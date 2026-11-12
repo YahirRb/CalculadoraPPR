@@ -85,7 +85,7 @@ function CalculadoraPPRContent() {
       }
       // Si sí está logueado, guardamos sus datos y armamos su enlace único
       setAgenteLogueado(user);
-      const urlCompartir = `${window.location.origin}/calculadoraAgente?agente=${user.id}`;
+      const urlCompartir = `${window.location.origin}/solicitud?agente=${user.id}`;
       setEnlaceCompartible(urlCompartir);
     };
 
