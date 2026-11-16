@@ -179,7 +179,8 @@ function ReporteContent() {
         {/* Botones de acción superior (No se imprimen) */}
         <div className="flex flex-wrap justify-between items-center gap-2 no-print border-b pb-3">
           <button 
-            onClick={() => window.history.back()}
+            //onClick={() => router.push("/calculadoraAgente")}
+            onClick={() => window.location.href = "/calculadoraAgente"}
             className="text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 py-2 px-4 rounded-xl transition"
           >
             ← Volver
@@ -212,7 +213,7 @@ function ReporteContent() {
 
         {/* Membrete / Encabezado */}
         <div className="text-center border-b pb-3">
-          <div className="py-2.5 px-4 rounded-xl mt-1 shadow-sm" style={{ backgroundColor: '#3D1425', color: '#ffffff' }}>
+          <div className="py-2.5 px-4 rounded-xl mt-1 shadow-sm bg-slate-800 text-white">
             <h1 className="text-base sm:text-lg font-bold">Estrategia de Retiro Acelerado</h1>
             <p className="text-[11px] text-[#EED5B7]">Análisis de Beneficio Fiscal (LISR Art. 151 Fracc. V)*</p>
           </div>
@@ -221,19 +222,19 @@ function ReporteContent() {
         {/* Saludo y Fecha (Protegido contra SSR mismatch) */}
         <div className="flex justify-between items-center text-xs px-1">
           <span className="font-semibold text-slate-800 bg-slate-100 py-1 px-3 rounded-lg">
-            Hola, <strong className="text-[#3D1425]">{nombre}</strong>
+            Hola, <strong className="text-slate-900">{nombre}</strong>
           </span>
           <span className="text-[11px] text-slate-500">{fechaActual || "Cargando..."}</span>
         </div>
 
-        <p className="text-xs text-slate-600 px-1 leading-relaxed">
+        <p className="text-xs text-slate-600 px-1 leading-relaxed text-center sm:text-justify">
           Con base a tu perfil de ingresos como asalariado, hemos diseñado una estrategia para convertir tu carga fiscal actual en un patrimonio garantizado para tu futuro. El objetivo de este documento es mostrarte cómo el SAT puede financiar hasta el 30% de tu fondo de retiro.
         </p>
 
         {/* Tablas de Diagnóstico y Estrategia */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="border border-[#3D1425] rounded-xl overflow-hidden shadow-sm">
-            <div className="text-[11px] font-bold py-1.5 text-center uppercase tracking-wider" style={{ backgroundColor: '#3D1425', color: '#ffffff' }}>
+       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="border border-slate-700 rounded-xl overflow-hidden shadow-sm">
+            <div className="text-[11px] font-bold py-1.5 text-center uppercase tracking-wider bg-slate-800 text-white">
               Tu Diagnóstico
             </div>
             <div className="p-2.5 bg-[#FDFBF7] space-y-1 text-xs">
@@ -252,8 +253,8 @@ function ReporteContent() {
             </div>
           </div>
 
-          <div className="border border-[#3D1425] rounded-xl overflow-hidden shadow-sm">
-            <div className="text-[11px] font-bold py-1.5 text-center uppercase tracking-wider" style={{ backgroundColor: '#3D1425', color: '#ffffff' }}>
+          <div className="border border-slate-700 rounded-xl overflow-hidden shadow-sm">
+            <div className="text-[11px] font-bold py-1.5 text-center uppercase tracking-wider bg-slate-800 text-white">
               La Estrategia
             </div>
             <div className="p-2.5 bg-[#FDFBF7] space-y-1 text-xs">
@@ -267,52 +268,62 @@ function ReporteContent() {
               </div>
               <div className="flex justify-between pt-0.5">
                 <span className="text-slate-600">Tope legal aprovechando:</span>
-                <span className="font-bold text-[#3D1425]">10% exacto de tu ingreso</span>
+                <span className="font-bold text-slate-800">10% exacto de tu ingreso</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Banner de Beneficio Fiscal Inmediato */}
-        <div className="bg-[#F7EEDD] border border-[#C29B75] p-3 rounded-2xl space-y-1.5 text-center shadow-sm">
-          <h4 className="text-[11px] font-bold uppercase tracking-wide text-[#3D1425]">El Beneficio Fiscal Inmediato</h4>
-          <p className="text-[11px] text-slate-700">
-            Al hacer tu declaración anual en el mes de abril, el SAT te devolverá en efectivo el impuesto retenido sobre la aportación que realizaste a tu plan.
+        <div className="bg-indigo-50/80 border border-slate-400 p-3 rounded-2xl space-y-1.5 text-center shadow-sm">
+          <h4 className="text-[11px] font-bold uppercase tracking-wide text-slate-800">El Beneficio Fiscal Inmediato</h4>
+          
+          <p className="text-[11px] text-slate-600">
+            💡 Al hacer tu declaración anual en el mes de abril, el SAT te devolverá en efectivo el impuesto retenido sobre la aportación que realizaste a tu plan.
           </p>
-          <div className="flex justify-around items-center pt-1.5 border-t border-[#C29B75]/40 gap-2">
-            <div>
+          <div className="flex flex-col sm:flex-row justify-around items-center pt-1.5 border-t border-slate-300 gap-2">
+
+            <div className="w-full sm:flex-1 bg-white border border-slate-200 rounded-xl p-3.5 shadow-sm text-center sm:text-left">
               <span className="text-[10px] font-bold block uppercase text-slate-700">Devolución Estimada:</span>
-              <span className="text-sm font-black text-slate-900">{formatCurrency(devolucion)} <span className="text-[10px] font-normal">(Aprox. {porcentajeSat}% de tu ahorro)</span></span>
+              <span className="text-sm font-black text-slate-900">
+                {formatCurrency(devolucion)}{" "}
+                <span className="text-[10px] font-normal text-slate-500">(Aprox. {porcentajeSat}% de tu ahorro)</span>
+              </span>
             </div>
-            <div>
+            
+            <div className="w-full sm:flex-1 bg-white border border-slate-200 rounded-xl p-3.5 shadow-sm text-center sm:text-left">
               <span className="text-[10px] font-bold block uppercase text-slate-700">Costo Real de tu PPR:</span>
-              <span className="text-sm font-black text-slate-900">{formatCurrency(costoNeto)} <span className="text-[10px] font-normal">(El gobierno financia el resto)</span></span>
+              <span className="text-sm font-black text-slate-900">
+                {formatCurrency(costoNeto)}{" "}
+                <span className="text-[10px] font-normal text-slate-500">(El incentivo fiscal financia el resto)</span>
+              </span>
             </div>
-          </div>
-          <div className="bg-white/90 p-2 rounded-xl text-[11px] text-slate-700 mt-1 font-medium border border-[#C29B75]/30">
-            💡 El costo real de tu ahorro: Aunque aportas <strong className="text-[#3D1425]">{formatCurrency(aportacionMensual)}</strong> al mes en tu Plan Personal para el Retiro, al recibir tu devolución anual, el impacto real en tu bolsillo es de sólo <strong className="text-emerald-700">{formatCurrency(aportacionRealMensual)}</strong> al mes. El gobierno está pagando la diferencia.
+
           </div>
         </div>
 
         {/* Resultado Progresivo */}
         <div className="space-y-2 pt-1 print-avoid-break">
-          <h3 className="text-[11px] font-bold uppercase tracking-wider text-[#3D1425] border-b border-slate-300 pb-0.5">
+          <h3 className="text-[11px] font-bold uppercase tracking-wider text-bg-slate-800 border-b border-slate-300 pb-0.5">
             RESULTADO PROGRESIVO (PROYECCIÓN A {anosRestantes} AÑOS)
           </h3>
           <p className="text-[11px] text-slate-600 text-center">
             ¿Qué pasa si en lugar de gastar la devolución del SAT, la reinvertimos anualmente junto con tu plan?<br />
-            Aquí tienes la proyección del poder del interés compuesto (tasa proyectada del {tasaRendimiento}% anual):
+            Aquí tienes la simulación del interés compuesto (tasa proyectada del {tasaRendimiento}% anual):
           </p>
 
-          <div className="grid grid-cols-12 gap-3 items-center">
-            <div className="col-span-8 p-3 rounded-xl space-y-1.5 text-xs shadow-sm" style={{ backgroundColor: '#3D1425', color: '#ffffff' }}>
+          {/* Cambiamos a grid de 1 columna en móvil y 12 columnas en pantallas medianas en adelante */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+            
+            {/* Caja principal oscura: Ocupa todo el ancho en móvil y 8 columnas en computadoras */}
+            <div className="col-span-12 md:col-span-8 bg-slate-900 text-white p-3 rounded-xl space-y-1.5 text-xs shadow-sm">
               <div className="flex justify-between border-b border-white/20 pb-0.5 text-[11px]">
                 <span>Fondo proyectado por el Plan Personal para el Retiro ({anosRestantes} aportaciones)</span>
-                <span className="font-bold text-amber-300">{formatCurrency(fondoPpr)}</span>
+                <span className="font-bold text-indigo-300">{formatCurrency(fondoPpr)}</span>
               </div>
               <div className="flex justify-between border-b border-white/20 pb-0.5 text-[11px]">
                 <span>Fondo generado reinvirtiendo la devolución</span>
-                <span className="font-bold text-amber-300">{formatCurrency(fondoReinversion)}</span>
+                <span className="font-bold text-indigo-300">{formatCurrency(fondoReinversion)}</span>
               </div>
               <div className="flex justify-between pt-0.5 text-xs font-black">
                 <span>TOTAL PATRIMONIO AL RETIRO</span>
@@ -320,14 +331,16 @@ function ReporteContent() {
               </div>
             </div>
 
-            <div className="col-span-4 bg-[#F7EEDD]/70 border border-[#C29B75]/60 p-2.5 rounded-xl text-center space-y-0.5 shadow-sm">
+            {/* Caja lateral clara: Ocupa todo el ancho en móvil y 4 columnas en computadoras */}
+            <div className="col-span-12 md:col-span-4 bg-indigo-50/80 border border-slate-500 p-2.5 rounded-xl text-center space-y-0.5 shadow-sm">
               <span className="text-[10px] font-bold text-slate-700 uppercase block">Y al final, tú sólo habrás contribuido</span>
-              <span className="text-base font-black text-[#3D1425]">{formatCurrency(aportacionPpr)}</span>
+              <span className="text-base font-black text-slate-900">{formatCurrency(aportacionPpr)}</span>
             </div>
+
           </div>
         </div>
 
-        <div className="text-center font-bold text-[11px] text-[#3D1425] uppercase tracking-wide pt-1">
+        <div className="text-center font-bold text-[11px] text-slate-900 uppercase tracking-wide pt-1">
           Haz de La Secretaría de Hacienda y Crédito Público, tu mejor socio para el retiro.
         </div>
 
@@ -337,8 +350,8 @@ function ReporteContent() {
             *Nota legal: Este documento es una proyección financiera y fiscal ilustrativa basada en la Ley del Impuesto Sobre la Renta (LISR Art. 151 y 152) vigente. Las tasas de rendimiento y valores de UMA están sujetos a variaciones del mercado y actualizaciones gubernamentales anuales.
           </p>
           
-         <div className="w-full bg-[#FDFBF7] border border-[#3D1425]/20 py-2 px-3 rounded-xl shadow-sm">
-            <p className="font-bold text-[#3D1425] text-[10px] sm:text-[11px] tracking-tight">
+         <div className="w-full bg-indigo-50/80 border border-slate-400 py-2 px-3 rounded-xl shadow-sm">
+            <p className="font-bold text-slate-900 text-[10px] sm:text-[11px] tracking-tight">
               Agente Profesional en Seguros: {usuarioSupabase?.user_metadata?.nombre || "Cargando..."} &nbsp;|&nbsp; 
               WhatsApp: {usuarioSupabase?.user_metadata?.telefono || "Cargando..."} &nbsp;|&nbsp; 
               Registro CNSF: {usuarioSupabase?.user_metadata?.cnsf || "Cargando..."} &nbsp; 

@@ -59,6 +59,7 @@ function CalculadoraPPRContent() {
   // Validar si hay un agente con sesión activa en este momento en el navegador
   // Validar si hay un agente con sesión activa en este momento en el navegador
   useEffect(() => {
+    //setIsModalOpen(false);
     const verificarSesionAgente = async () => {
       const { data: { user }, error } = await supabase.auth.getUser();
       
@@ -138,11 +139,10 @@ function CalculadoraPPRContent() {
     setAhorroMensual(nuevaAportacionMensual);
   };
 
-  const handleQuincenalChange = (val: number) => {
-    setAhorroMensual(val);
-    const aportacionMensualEquivalente = val * 2;
+  const handleMensualChange = (val: number) => {
+    setAhorroMensual(val); 
     if (ingresoMensual > 0) {
-      const nuevoPorcentaje = (aportacionMensualEquivalente / ingresoMensual) * 100;
+      const nuevoPorcentaje = (val / ingresoMensual) * 100;
       setPorcentajeAhorro(Math.min(Math.max(Math.round(nuevoPorcentaje), 1), 50));
     }
   };
@@ -240,7 +240,7 @@ function CalculadoraPPRContent() {
     if (agenteUrlId) {
       params.append("agente", agenteUrlId);
     }
-
+    
     router.push(`/reporte?${params.toString()}`);
   };
 
@@ -310,37 +310,93 @@ function CalculadoraPPRContent() {
               <div>
                 <label className="block text-xs font-semibold text-slate-700 uppercase">Ingreso Bruto Mensual ($ MXN)</label>
                 <input 
-                  type="number" 
-                  value={ingresoMensual} 
-                  onChange={(e) => handleIngresoChange(Number(e.target.value))}
+                  type="text" 
+                  inputMode="numeric"
+                  value={ingresoMensual === 0 || !ingresoMensual ? "" : Number(ingresoMensual).toLocaleString('en-US')} 
+                  onChange={(e) => {
+                    // 1. Limpiamos cualquier coma existente por seguridad
+                    const rawValue = e.target.value.replace(/,/g, '');
+
+                    // 2. Si el campo se queda vacío, mandamos 0
+                    if (rawValue === "") {
+                      handleIngresoChange(0);
+                      return;
+                    }
+
+                    // 3. Si es un número válido, actualizamos con el valor numérico puro
+                    if (!isNaN(Number(rawValue))) {
+                      handleIngresoChange(Number(rawValue));
+                    }
+                  }} 
+                  placeholder="0"
+                  className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition text-sm"
+               />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase">Otras Deducciones Personales ($ MXN)</label>
+                <input 
+                  type="text" 
+                  inputMode="numeric"
+                  value={otrasDeducciones === 0 || !otrasDeducciones ? "" : Number(otrasDeducciones).toLocaleString('en-US')} 
+                  onChange={(e) => {
+                    // 1. Limpiamos cualquier coma que tenga
+                    const rawValue = e.target.value.replace(/,/g, '');
+
+                    // 2. Si el campo queda vacío, mandamos 0
+                    if (rawValue === "") {
+                      setOtrasDeducciones(0);
+                      return;
+                    }
+
+                    // 3. Si es un número válido, lo guardamos en el estado limpio
+                    if (!isNaN(Number(rawValue))) {
+                      setOtrasDeducciones(Number(rawValue));
+                    }
+                  }}
+                  placeholder="0"
                   className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase">Otras Deducciones Personales ($)</label>
+                <label className="block text-xs font-semibold text-slate-700 uppercase">
+                  Ahorro mensual ($ MXN)
+                </label>
                 <input 
-                  type="number" 
-                  value={otrasDeducciones} 
-                  onChange={(e) => setOtrasDeducciones(Number(e.target.value))}
-                  className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition text-sm"
-                />
-              </div>
+                  type="text" 
+                  inputMode="numeric"
+                  value={aportacionMensual === 0 || !aportacionMensual ? "" : Number(aportacionMensual).toLocaleString('en-US')} 
+                  onChange={(e) => {
+                    const rawValue = e.target.value.replace(/,/g, '');
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase">Ahorro mensual ($ MXN)</label>
-                <input 
-                  type="number" 
-                  value={aportacionMensual} 
-                  onChange={(e) => handleQuincenalChange(Number(e.target.value))}
-                  className="w-full mt-1 p-2.5 bg-white border-2 border-indigo-400 rounded-xl text-indigo-700 font-bold focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm text-sm"
+                    if (rawValue === "") {
+                      handleMensualChange(0);
+                      return;
+                    }
+
+                    if (!isNaN(Number(rawValue))) {
+                      handleMensualChange(Number(rawValue));
+                    }
+                  }} 
+                  placeholder="0"
+                  className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition text-sm"
+                
                 />
+                
+                {/* Aportación anual calculada */}
+                <div className="mt-1.5 flex justify-between items-center text-[11px] px-1">
+                  <span className="text-slate-500">Aportación anual proyectada:</span>
+                  <span className="font-bold text-slate-800">
+                    ${((Number(aportacionMensual) || 0) * 12).toLocaleString('en-US')} MXN
+                  </span>
+                </div>
               </div>
 
               <div>
                 <div className="flex justify-between items-center text-xs font-semibold text-slate-700 uppercase">
                   <span>% Ahorro equivalente:</span>
-                  <span className="bg-indigo-600 text-white px-2 py-0.5 rounded-md text-xs font-bold">{porcentajeAhorro}%</span>
+                  <span className="bg-slate-800 text-white px-2 py-0.5 rounded-md text-xs font-bold">{porcentajeAhorro}%</span>
                 </div>
                 <input 
                   type="range" 
@@ -349,7 +405,7 @@ function CalculadoraPPRContent() {
                   step="1"
                   value={porcentajeAhorro} 
                   onChange={(e) => handlePorcentajeChange(Number(e.target.value))}
-                  className="w-full mt-1.5 accent-indigo-600 cursor-pointer"
+                  className="w-full mt-1.5 accent-slate-800 cursor-pointer"
                 />
               </div>
 
@@ -358,13 +414,16 @@ function CalculadoraPPRContent() {
                   <label className="block text-xs font-semibold text-slate-700 uppercase">Edad Actual</label>
                   <input 
                     type="number" 
-                    value={edadActual} 
-                    onChange={(e) => setEdadActual(Number(e.target.value))}
+                    value={edadActual === 0 ? "" : edadActual} 
+                    
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setEdadActual(val === "" ? 0 :Number(val))}}
                     className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 uppercase">Años Retiro</label>
+                  <label className="block text-xs font-semibold text-slate-700 uppercase">Años Para Retiro (65)</label>
                   <input 
                     type="text" 
                     disabled 
@@ -375,65 +434,95 @@ function CalculadoraPPRContent() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase">Tasa de Rendimiento Anual Est. (%)</label>
+                <label className="block text-xs font-semibold text-slate-700 uppercase">Tasa de Rendimiento Anual Estimada (%)</label>
                 <input 
                   type="number" 
                   step="0.5"
                   value={tasaRendimiento} 
+                  disabled
                   onChange={(e) => setTasaRendimiento(Number(e.target.value))}
                   className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium focus:ring-2 focus:ring-indigo-500 outline-none transition"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-indigo-700 uppercase">
-                  Fondo Proyectado PPR  ($)
-                </label>
+                <div className="flex items-center gap-1.5">
+                  <label className="block text-xs font-semibold text-indigo-700 uppercase">
+                    Proyección al Término del PPR ($ MXN)
+                  </label>
+                  
+                  {/* Contenedor del ícono con tooltip nativo (el texto va únicamente en el atributo title) */}
+                  <span 
+                    title="Monto estimado al finalizar el plazo según la corrida financiera de tu aseguradora."
+                    className="cursor-help text-[10px] bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-bold w-4 h-4 rounded-full inline-flex items-center justify-center transition"
+                  >
+                    ?
+                  </span>
+                </div>
+
                 <input 
-                  type="number" 
-                  value={fondoProyectadoPPR} 
-                  onChange={(e) => setFondoProyectadoPPR(Number(e.target.value))}
+                  type="text" 
+                  inputMode="numeric"
+                  value={fondoProyectadoPPR === 0 || !fondoProyectadoPPR ? "" : Number(fondoProyectadoPPR).toLocaleString('en-US')} 
+                  onChange={(e) => {
+                    const rawValue = e.target.value.replace(/,/g, '');
+                    if (rawValue === "") {
+                      setFondoProyectadoPPR(0);
+                      return;
+                    }
+                    if (!isNaN(Number(rawValue))) {
+                      setFondoProyectadoPPR(Number(rawValue));
+                    }
+                  }} 
+                  placeholder="0"
                   className="w-full mt-1 p-2.5 bg-indigo-50/50 border-2 border-indigo-300 rounded-xl text-indigo-900 font-bold focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition"
                 />
               </div>
+              
               <div>
+              <div className="flex items-center gap-1.5">
                 <label className="block text-xs font-semibold text-indigo-700 uppercase">
-                  Aportación Total ($)
+                  Aportaciones al Término del PPR ($ MXN)
                 </label>
-                <input 
-                  type="number" 
-                  value={aportacionTotal} 
-                  onChange={(e) => setAportacionTotal(Number(e.target.value))}
-                  className="w-full mt-1 p-2.5 bg-indigo-50/50 border-2 border-indigo-300 rounded-xl text-indigo-900 font-bold focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition"
-                />
+                
+                <span 
+                  title="Suma total de todas las aportaciones que realizarás a lo largo de los años que dure el plan."
+                  className="cursor-help text-[10px] bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-bold w-4 h-4 rounded-full inline-flex items-center justify-center transition"
+                >
+                  ?
+                </span>
               </div>
+
+              <input 
+                type="text" 
+                inputMode="numeric"
+                value={aportacionTotal === 0 || !aportacionTotal ? "" : Number(aportacionTotal).toLocaleString('en-US')} 
+                onChange={(e) => {
+                  // 1. Limpiamos cualquier coma existente
+                  const rawValue = e.target.value.replace(/,/g, '');
+
+                  // 2. Si se vacía el campo, guardamos 0
+                  if (rawValue === "") {
+                    setAportacionTotal(0);
+                    return;
+                  }
+
+                  // 3. Si es un número válido, lo guardamos limpio en el estado
+                  if (!isNaN(Number(rawValue))) {
+                    setAportacionTotal(Number(rawValue));
+                  }
+                }} 
+                placeholder="0"
+                className="w-full mt-1 p-2.5 bg-indigo-50/50 border-2 border-indigo-300 rounded-xl text-indigo-900 font-bold focus:ring-2 focus:ring-indigo-500 outline-none text-sm transition"
+              />
+            </div>
             </div>
           </div>
 
           {/* COLUMNA DERECHA: Resultados */}
           <div className="lg:col-span-7 space-y-6">
 
-            <div className="bg-white border border-indigo-100 rounded-2xl overflow-hidden shadow-md">
-              <div className="bg-indigo-900 px-5 py-2.5">
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-                  Desglose Anual del Plan
-                </h3>
-              </div>
-              <div className="p-4 space-y-2 text-xs sm:text-sm">
-                <div className="flex justify-between py-1 border-b border-slate-100">
-                  <span className="text-slate-600 font-medium">Aportación Anual al PPR:</span>
-                  <span className="font-bold text-slate-900">{formatCurrency(aportacionAnualPPR)}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-100">
-                  <span className="text-slate-600 font-medium">Contribución SAT anual:</span>
-                  <span className="font-bold text-emerald-600">+{formatCurrency(devolucionEstimada)}</span>
-                </div>
-                <div className="flex justify-between py-2 bg-indigo-50/80 px-3 rounded-xl border border-indigo-100 mt-1">
-                  <span className="font-extrabold text-indigo-900">Aportación Real Neta Anual:</span>
-                  <span className="font-extrabold text-indigo-700 text-base">{formatCurrency(aportacionRealAnual)}</span>
-                </div>
-              </div>
-            </div>
+           
             
             <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-md">
               <div className="bg-slate-800 px-5 py-2.5">
@@ -441,6 +530,10 @@ function CalculadoraPPRContent() {
                   Validación de Topes Fiscales (Art. 151 LISR)
                 </h3>
               </div>
+              {/*<div className="flex justify-between py-2 bg-indigo-50/80 px-3 rounded-xl border border-indigo-100 mt-1">
+                  <span className="font-extrabold text-indigo-900">Aportación Real Neta Anual:</span>
+                  <span className="font-extrabold text-indigo-700 text-base">{formatCurrency(aportacionRealAnual)}</span>
+              </div>*/}
               <div className="p-4 space-y-2 text-xs sm:text-sm">
                 <div className="flex justify-between py-1 border-b border-slate-100">
                   <span className="text-slate-600">Tope 10% del Ingreso:</span>
@@ -547,99 +640,71 @@ function CalculadoraPPRContent() {
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-5 animate-in fade-in zoom-in duration-200">
             
-            {step === "form" && (
-              <>
-                <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-                  <h3 className="text-lg font-extrabold text-slate-900">Datos para tu Reporte</h3>
-                  <button onClick={closeModal} className="text-slate-400 hover:text-slate-600 font-bold text-lg">×</button>
-                </div>
-                <p className="text-xs text-slate-600">
-                  Ingresa tus datos de contacto para generar y desbloquear tu reporte patrimonial personalizado.
-                </p>
+            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+              <h3 className="text-lg font-extrabold text-slate-900">Datos para tu Reporte</h3>
+              <button onClick={closeModal} className="text-slate-400 hover:text-slate-600 font-bold text-lg">×</button>
+            </div>
+            <p className="text-xs text-slate-600">
+              Ingresa tus datos de contacto para generar y desbloquear tu reporte patrimonial personalizado.
+            </p>
 
-                <form onSubmit={handleIrAConfirmacion} className="space-y-3.5 text-sm">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 uppercase">Nombre Completo</label>
-                    <input 
-                      type="text" 
-                      required
-                      value={formData.nombre} 
-                      onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                      placeholder="Ej. Carlos Mendoza" 
-                      className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 uppercase">Correo Electrónico</label>
-                    <input 
-                      type="email" 
-                      required
-                      value={formData.email} 
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      placeholder="correo@ejemplo.com" 
-                      className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 uppercase">Teléfono Celular (10 dígitos)</label>
-                    <input 
-                      type="tel" 
-                      required
-                      value={formData.telefono} 
-                      onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-                      placeholder="6641234567" 
-                      className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500"
-                    />
-                  </div>
-
-                  {errorValidacion && (
-                    <p className="text-xs text-rose-600 font-medium bg-rose-50 p-2.5 rounded-xl border border-rose-200">
-                      {errorValidacion}
-                    </p>
-                  )}
-
-                  <div className="pt-2 flex space-x-3">
-                    <button 
-                      type="button" 
-                      onClick={closeModal}
-                      className="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition text-xs"
-                    >
-                      Cancelar
-                    </button>
-                    <button 
-                      type="submit" 
-                      className="w-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition text-xs shadow-md shadow-indigo-500/20"
-                    >
-                      Continuar
-                    </button>
-                  </div>
-                </form>
-              </>
-            )}
-
-            {step === "confirmacion" && (
-              <div className="space-y-4 text-center py-2">
-                <div className="w-12 h-12 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center mx-auto text-xl font-bold">✓</div>
-                <h3 className="text-lg font-extrabold text-slate-900">¡Todo listo, {formData.nombre}!</h3>
-                <p className="text-xs text-slate-600">
-                  Tus datos han sido validados correctamente. Haz clic en el botón de abajo para visualizar tu reporte oficial detallado.
-                </p>
-                <div className="pt-3 flex space-x-3">
-                  <button 
-                    onClick={() => setStep("form")}
-                    className="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition text-xs"
-                  >
-                    Atrás
-                  </button>
-                  <button 
-                    onClick={handleConfirmarEnvioFinal}
-                    className="w-1/2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-3 rounded-xl transition text-xs shadow-md shadow-emerald-500/20"
-                  >
-                    Ver mi Reporte
-                  </button>
-                </div>
+            <form onSubmit={(e) => { e.preventDefault(); handleConfirmarEnvioFinal(); }} className="space-y-3.5 text-sm">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase">Nombre Completo</label>
+                <input 
+                  type="text" 
+                  required
+                  value={formData.nombre} 
+                  onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+                  placeholder="Ej. Carlos Mendoza" 
+                  className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500"
+                />
               </div>
-            )}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase">Correo Electrónico</label>
+                <input 
+                  type="email" 
+                  required
+                  value={formData.email} 
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="correo@ejemplo.com" 
+                  className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 uppercase">Teléfono Celular (10 dígitos)</label>
+                <input 
+                  type="tel" 
+                  required
+                  value={formData.telefono} 
+                  onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+                  placeholder="6641234567" 
+                  className="w-full mt-1 p-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              {errorValidacion && (
+                <p className="text-xs text-rose-600 font-medium bg-rose-50 p-2.5 rounded-xl border border-rose-200">
+                  {errorValidacion}
+                </p>
+              )}
+
+              <div className="pt-2 flex space-x-3">
+                <button 
+                  type="button" 
+                  onClick={closeModal}
+                  className="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl transition text-xs"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  className="w-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition text-xs shadow-md shadow-indigo-500/20"
+                >
+                  Ver mi Reporte
+                </button>
+              </div>
+            </form>
 
           </div>
         </div>
